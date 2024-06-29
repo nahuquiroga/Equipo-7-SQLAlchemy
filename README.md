@@ -32,7 +32,7 @@ Este proyecto permite la gestión de inscripciones de estudiantes a diversas car
 
 1. Clona este repositorio.
    ```bash
-   git clone https://github.com/tuusuario/sistema-inscripcion-universitaria.git
+   git clone https://github.com/nahuquiroga/Equipo-7-SQLAlchemy.git
    ```
    
 2. Navega al directorio del proyecto.
