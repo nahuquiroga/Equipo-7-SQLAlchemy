@@ -1,2 +1,2 @@
-# Equipo-7-SQLAlchemy
-Sistema de Inscripción Universitaria
+# Sistema de Inscripción Universitaria
+
