@@ -35,12 +35,7 @@ Este proyecto permite la gestión de inscripciones de estudiantes a diversas car
    git clone https://github.com/nahuquiroga/Equipo-7-SQLAlchemy.git
    ```
    
-2. Navega al directorio del proyecto.
-   ```bash
-   cd sistema-inscripcion-universitaria
-   ```
-   
-4. Instala las dependencias.
+2. Instala las dependencias.
    ```bash
    pip install -r requirements.txt
    ```
