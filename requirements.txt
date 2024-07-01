@@ -1,2 +1,2 @@
-SQLAlchemy
-pandas
+Python.
+SQLAlchemy.
