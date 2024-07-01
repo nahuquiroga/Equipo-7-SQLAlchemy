@@ -12,7 +12,7 @@ Este proyecto permite la gestión de inscripciones de estudiantes a diversas car
 
 **Inscripción a carreras:** Asigna estudiantes a carreras específicas.
 
-**Exportación a db:** Genera un archivo.db con los datos de los estudiantes y sus carreras.
+**Exportación a db:** Genera un archivo .db con los datos de los estudiantes y sus carreras.
 
 
 
