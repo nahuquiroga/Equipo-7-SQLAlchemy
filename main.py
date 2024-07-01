@@ -7,7 +7,6 @@ from crud import (
     get_careers, get_student_by_dni
 )
 import modelo  # Importar el modelo para asegurarse de que las tablas se crean
-import pandas as pd
 
 # Inicialización de la base de datos
 modelo.Base.metadata.create_all(bind=engine)
@@ -41,33 +40,6 @@ def initialize_careers(db):
         if not career:
             create_career(db, name=career_name)
 
-def export_to_csv(db):
-    # Obtener todos los estudiantes
-    students = db.query(modelo.Student).all()
-
-    # Convertir a DataFrame de pandas para exportar a CSV
-    df_students = pd.DataFrame([{
-        'Nombre': student.name,
-        'Apellido': student.last_name,
-        'Matrícula': student.enrollment_number,
-        'DNI': student.dni,
-        'Carrera': ''  # Columna de carrera inicialmente vacía
-    } for student in students])
-
-    # Obtener y actualizar la información de la carrera para cada estudiante
-    for student in students:
-        student_careers = get_careers(db, student.id)
-        if student_careers:
-            # Suponiendo que el estudiante se inscribe en la primera carrera de la lista
-            selected_career = student_careers[0]
-            df_students.loc[df_students['Matrícula'] == student.enrollment_number, 'Carrera'] = selected_career.name
-
-    # Ordenar y seleccionar las columnas en el orden deseado
-    df_students = df_students[['Nombre', 'Apellido', 'Matrícula', 'DNI', 'Carrera']]
-
-    # Guardar el DataFrame ordenado y organizado como CSV
-    df_students.to_csv('students_sorted.csv', index=False, encoding='utf-8-sig')
-
 def main():
     db: Session = SessionLocal()
     print("Bienvenidos al sistema de Inscripción de la Universidad Almirante Brown")
@@ -77,52 +49,78 @@ def main():
     
     while True:
         print("\n1. Inscribir estudiante")
-        print("2. Salir")
+        print("2. Mostrar estudiantes inscritos en una carrera")
+        print("3. Mostrar cantidad de estudiantes por carrera")
+        print("4. Salir")
         choice = input("Seleccione una opción: ")
 
-        if choice == '2':
+        if choice == '4':
             break
         elif choice == '1':
-            student_name = input("\nIngrese nombre del estudiante: ")
-            student_last_name = input("Ingrese apellido del estudiante: ")
-            student_dni = input("Ingrese DNI del estudiante: ")
+            enroll_student(db)
+        elif choice == '2':
+            show_students_in_career(db)
+        elif choice == '3':
+            show_students_count_by_career(db)
 
-            # Verificar si el estudiante ya está registrado
-            existing_student = get_student_by_dni(db, student_dni)
-            if existing_student:
-                print(f"El estudiante con DNI {student_dni} ya se encuentra registrado.")
-                continue
-
-            enrollment_number = generate_enrollment_number(db)
-            student = create_student(db, name=student_name, last_name=student_last_name, enrollment_number=enrollment_number, dni=student_dni)
-
-            print("\nSeleccione la carrera a la que desea inscribirse:")
-            careers = get_careers(db, student.id)  # Obtener todas las carreras disponibles
-            for i, career in enumerate(careers, start=1):
-                print(f"{i}. {career.name}")
-            
-            career_choice = int(input("Ingrese el número de la carrera: "))
-            selected_career = careers[career_choice - 1]
-
-            enroll_student_in_career(db, student.id, selected_career.id)
-
-            students_in_career = get_students_in_career(db, selected_career.id)
-            num_students = len(students_in_career)
-
-            print(f"\nEstudiantes en la carrera {selected_career.name}:")
-            for student in students_in_career:
-                print(f"Nombre: {student.name} {student.last_name}, Matrícula: {student.enrollment_number}")
-            
-            print(f"\nActualmente hay {num_students} personas inscritas en la carrera {selected_career.name}")
-            print(f"\nEstudiante {student_name} {student_last_name} inscrito correctamente con matrícula {enrollment_number}")
-
-        continue_option = input("\nPresione Enter para continuar o 'q' para salir: ")
-        if continue_option.lower() == 'q':
-            break
-
-    # Exportar los datos a CSV después de la ejecución del ciclo
-    export_to_csv(db)
     db.close()
+
+def show_students_count_by_career(db):
+    careers = get_careers(db)
+    
+    print("\nCantidad de estudiantes por carrera:")
+    for career in careers:
+        num_students = len(get_students_in_career(db, career.id))
+        print(f"{career.name}: {num_students} estudiantes")
+
+def enroll_student(db):
+    student_name = input("\nIngrese nombre del estudiante: ")
+    student_last_name = input("Ingrese apellido del estudiante: ")
+    student_dni = input("Ingrese DNI del estudiante: ")
+
+    # Verificar si el estudiante ya está registrado
+    existing_student = get_student_by_dni(db, student_dni)
+    if existing_student:
+        print(f"El estudiante con DNI {student_dni} ya se encuentra registrado.")
+        return
+
+    enrollment_number = generate_enrollment_number(db)
+    student = create_student(db, name=student_name, last_name=student_last_name, enrollment_number=enrollment_number, dni=student_dni)
+
+    print("\nSeleccione la carrera a la que desea inscribirse:")
+    careers = get_careers(db)  # Obtener todas las carreras disponibles
+    for i, career in enumerate(careers, start=1):
+        print(f"{i}. {career.name}")
+    
+    career_choice = int(input("Ingrese el número de la carrera: "))
+    selected_career = careers[career_choice - 1]
+
+    enroll_student_in_career(db, student.id, selected_career.id)
+
+    students_in_career = get_students_in_career(db, selected_career.id)
+    num_students = len(students_in_career)
+
+    print(f"\nEstudiantes en la carrera {selected_career.name}:")
+    for student in students_in_career:
+        print(f"Nombre: {student.name} {student.last_name}, Matrícula: {student.enrollment_number}")
+    
+    print(f"\nActualmente hay {num_students} personas inscritas en la carrera {selected_career.name}")
+    print(f"\nEstudiante {student_name} {student_last_name} inscrito correctamente con matrícula {enrollment_number}")
+
+def show_students_in_career(db):
+    print("\nSeleccione la carrera para ver los estudiantes inscritos:")
+    careers = get_careers(db)
+    for i, career in enumerate(careers, start=1):
+        print(f"{i}. {career.name}")
+
+    career_choice = int(input("Ingrese el número de la carrera: "))
+    selected_career = careers[career_choice - 1]
+
+    students_in_career = get_students_in_career(db, selected_career.id)
+
+    print(f"\nEstudiantes en la carrera {selected_career.name}:")
+    for student in students_in_career:
+        print(f"Nombre: {student.name} {student.last_name}, Matrícula: {student.enrollment_number}")
 
 if __name__ == "__main__":
     main()
