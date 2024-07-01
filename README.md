@@ -12,7 +12,7 @@ Este proyecto permite la gestión de inscripciones de estudiantes a diversas car
 
 **Inscripción a carreras:** Asigna estudiantes a carreras específicas.
 
-**Exportación a CSV:** Genera un archivo CSV con los datos de los estudiantes y sus carreras.
+**Exportación a db:** Genera un archivo.db con los datos de los estudiantes y sus carreras.
 
 
 
@@ -52,5 +52,5 @@ Este proyecto permite la gestión de inscripciones de estudiantes a diversas car
 
 
 ## Exportación de Datos
-Después de finalizar las operaciones, los datos de los estudiantes se exportarán automáticamente a un archivo students_sorted.csv.
+Después de finalizar las operaciones, los datos de los estudiantes se exportarán automáticamente a un archivo UNAB_Inscripciones.db
 
