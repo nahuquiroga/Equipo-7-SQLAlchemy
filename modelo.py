@@ -15,7 +15,7 @@ class Student(Base):
     name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
     enrollment_number = Column(String, unique=True, nullable=False)
-    dni = Column(String, unique=True, nullable=False)  # Agregar el campo dni
+    dni = Column(String, unique=True, nullable=False) 
     careers = relationship('Career', secondary=enrollment_career, back_populates='students')
 
 class Career(Base):
