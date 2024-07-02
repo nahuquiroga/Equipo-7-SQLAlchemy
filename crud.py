@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from modelo import Student, Career, enrollment_career
 
-# CRUD para Student
 def get_student(db: Session, student_id: int):
     return db.query(Student).filter(Student.id == student_id).first()
 
@@ -21,7 +20,6 @@ def create_student(db: Session, name: str, last_name: str, enrollment_number: st
 def get_student_by_dni(db: Session, dni: str):
     return db.query(Student).filter(Student.dni == dni).first()
 
-# CRUD para Career
 def get_career(db: Session, career_id: int):
     return db.query(Career).filter(Career.id == career_id).first()
 
@@ -35,7 +33,7 @@ def create_career(db: Session, name: str):
     db.refresh(db_career)
     return db_career
 
-# Funciones adicionales para la inscripción de estudiantes en carreras
+# Funciones para la inscripción de estudiantes en carreras
 def enroll_student_in_career(db: Session, student_id: int, career_id: int):
     enrollment = enrollment_career.insert().values(student_id=student_id, career_id=career_id)
     db.execute(enrollment)
